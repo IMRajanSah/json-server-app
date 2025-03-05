@@ -3,10 +3,11 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
-
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+const SECRET_KEY = "your_secret_key"; // Change this for security
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -15,33 +16,40 @@ app.use(express.json());
 const usersFile = path.join(__dirname, "data", "./users.json");
 const productsFile = path.join(__dirname, "data", "./products.json");
 
-
-
-// Mount routers
-app.get("/users", (req, res) => {
-    console.log("Fetching users...");
-    const users = JSON.parse(fs.readFileSync(usersFile, "utf-8"));
-    res.json(users); // Send actual users data
-});
-// Fix the route to return actual data
-app.get("/products", (req, res) => {
-    console.log("Fetching users...");
-    const products = JSON.parse(fs.readFileSync(productsFile, "utf-8"));
-    res.json(products); // Send actual users data
-});
-
-//post user
-app.post("/users", (req, res) => {
-    // console.log('post');
-    
+// ** Middleware to Verify JWT Token**
+const authenticateToken = (req, res, next) => {
+    const token = req.header("Authorization");
+    if (!token) return res.status(401).json({ message: "Access denied. No token provided." });
+  
+    try {
+      const decoded = jwt.verify(token.split(" ")[1], SECRET_KEY);
+      req.user = decoded;
+      next();
+    } catch (error) {
+      res.status(403).json({ message: "Invalid token." });
+    }
+};
+//post user for unique email only and bcrypt the password
+app.post("/signup", async (req, res) => {    
     // Read current users from the file
+    const { name, email, password } = req.body;
+    // Check if any required field is missing
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: "All fields (name, email, password) are required!" });
+    }
     const users = JSON.parse(fs.readFileSync(usersFile, "utf-8"));
     
+
     // Get new user data from the request body
-    const newUser = req.body;
+    if (users.find(user => user.email === email)) {
+        return res.status(400).json({ message: "Email already registered!" });
+    }
     
-    // Create a new id (this example assigns id = max id + 1, or 1 if empty)
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newId = users.length > 0 ? Math.max(...users.map(user => user.id)) + 1 : 1;
+    const newUser = { id: newId, name, email, password: hashedPassword };
+    // Create a new id (this example assigns id = max id + 1, or 1 if empty)
+    
     newUser.id = newId;
     
     // Add new user to the users array
@@ -53,11 +61,43 @@ app.post("/users", (req, res) => {
     // Respond with the new user data
     res.status(201).json(newUser);
 });
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    // const users = readData(usersFile);
+    if (!email || !password) {
+        return res.status(400).json({ message: "All fields (name, email, password) are required!" });
+    }
+    const users = JSON.parse(fs.readFileSync(usersFile, "utf-8"));
+    const user = users.find(u => u.email === email);
+  
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Invalid email or password." });
+    }
+  
+    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
+    res.json({ token });
+});
+// get all users
+app.get("/users", authenticateToken,(req, res) => {
+    console.log("Fetching users...");
+    const users = JSON.parse(fs.readFileSync(usersFile, "utf-8"));
+    res.json(users); // Send actual users data
+});
 
-//post product
-app.post("/products", (req, res) => {
+// get all products with middleware acess
+app.get("/products",authenticateToken, (req, res) => {
+    console.log("Fetching users...");
+    const products = JSON.parse(fs.readFileSync(productsFile, "utf-8"));
+    res.json(products); // Send actual users data
+});
+
+//post product (not authorized)
+app.post("/products", authenticateToken,(req, res) => {
     // console.log('post');
-    
+    const { id,name, price } = req.body;
+    if (!id || !name || !price) {
+        return res.status(400).json({ message: "All fields (id, name, price) are required!" });
+    }
     // Read current users from the file
     const products = JSON.parse(fs.readFileSync(productsFile, "utf-8"));
     

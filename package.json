@@ -11,10 +11,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "fs": "0.0.1-security",
     "json-server": "^0.17.3",
+    "jsonwebtoken": "^9.0.2",
     "path": "^0.12.7"
   }
 }

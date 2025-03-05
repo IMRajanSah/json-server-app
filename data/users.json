@@ -3,24 +3,6 @@
     "id": 1,
     "name": "John Doe",
     "email": "john@example.com",
-    "password": "123456"
-  },
-  {
-    "id": 2,
-    "name": "Jane Doe",
-    "email": "jane@example.com",
-    "password": "password123"
-  },
-  {
-    "name": "Jane Doe",
-    "email": "jane@example.com",
-    "password": "password123",
-    "id": 3
-  },
-  {
-    "name": "Jane Doe",
-    "email": "jane@example.com",
-    "password": "password123",
-    "id": 4
+    "password": "$2b$10$PVgh7pqPXDlEH/lApYqIce9duKBJtljdWxIJThOMBdw41Xyi4ZA9."
   }
 ]
