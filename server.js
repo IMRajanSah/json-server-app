@@ -77,6 +77,9 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
     res.json({ token });
 });
+app.get("/profile", authenticateToken, (req, res) => {
+    res.json({ message: "Profile Accessed", user: req.user });
+});
 // get all users
 app.get("/users", authenticateToken,(req, res) => {
     console.log("Fetching users...");

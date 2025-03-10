@@ -1,5 +1,5 @@
 # json-server-app
-<!-- https://json-server-app-58r9.onrender.com/ -->
+https://json-server-app-58r9.onrender.com/
 future:
 1. verify the email using email otp
 
@@ -14,7 +14,16 @@ Done:
 
 
 Goal 1: signup without email verification, user authentication, and APIs authorization. <br/>
+    <!-- home page, auth header and unauth header -->
+    <!-- login page -->
+    <!-- loader for login and logout -->
+    <!-- signup -->
 Goal 2: signup with email verification. <br/>
 Goal 3: admin or customer authentication separation. <br/>
 Goal 4: create admin interface with certain operations. <br/>
 Goal 5: create customer interface with certain operation. <br/>
+
+{
+    "email": "john@example.com",
+        "password": "123456"
+}
