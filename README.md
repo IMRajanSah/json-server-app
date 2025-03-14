@@ -1,5 +1,6 @@
 # json-server-app
-https://json-server-app-58r9.onrender.com/
+BE: https://json-server-app-58r9.onrender.com/
+FE: https://rajansah-ecommerce.netlify.app/
 future:
 1. verify the email using email otp
 
@@ -18,6 +19,8 @@ Goal 1: signup without email verification, user authentication, and APIs authori
     <!-- login page -->
     <!-- loader for login and logout -->
     <!-- signup -->
+    <!-- route not working on netlify -->
+    1. header
 Goal 2: signup with email verification. <br/>
 Goal 3: admin or customer authentication separation. <br/>
 Goal 4: create admin interface with certain operations. <br/>
